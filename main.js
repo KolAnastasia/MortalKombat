@@ -1,3 +1,7 @@
+
+const $arenas = document.querySelector('.arenas')
+const $randomButton = document.querySelector('.button');
+
 const player1 = {
     name: 'Sonya',
     hp: 50,
@@ -18,43 +22,83 @@ const player2 = {
 };
 
 
-function createPlayer(className, obj ) {
-    const $player = document.createElement('div');
-    $player.classList.add(className);
+function createElement(tag, className){
+    const $tag= document.createElement(tag);
+    if (className) {
+        $tag.classList.add(className);
+    }
 
-   
-
-    const $progressbar = document.createElement('div');
-    $progressbar.classList.add('progressbar');
-
-    const $name = document.createElement('div');
-    $name.classList.add('name');
-    $name.innerText = obj.name;
-
-    const $character = document.createElement('div');
-    $character.classList.add('character');
-
-    const $img = document.createElement('img');
-    $img.src = obj.img;
-
-    const $life = document.createElement('div');
-    $life.classList.add('life');
-    $life.style.width =  obj.hp + '%';
+    return $tag;
+}
 
 
-    $progressbar.appendChild($life);
+function createPlayer( playerObj ) {
+    const $player = createElement('div', 'player'+ playerObj.player);
+    const $progressbar = createElement('div', 'progressbar');
+    const $character = createElement('div', 'character');
+    const $life = createElement('div', 'life');
+    const $name = createElement('div', 'name');
+    const $img = createElement('img');
+
+    $life.style.width =  playerObj.hp + '%';
+    $name.innerText = playerObj.name;
+    $img.src = playerObj.img;
+    
     $progressbar.appendChild($name);
-    $character.appendChild($img)
+    $progressbar.appendChild($life);
 
-    $player.appendChild($progressbar)
-    $player.appendChild($character)
+    $character.appendChild($img);
 
-    const $arenas = document.querySelector('.arenas')
-    $arenas.appendChild($player)
+    $player.appendChild($progressbar);
+    $player.appendChild($character);
 
+    return $player;
     
 
 }
+
+function random(number) { 
+    return Math.ceil(Math.random() * number);
+}
+
+function changeHP(player) {
+    const $playerLife = document.querySelector('.player' + player.player +' .life');
+    const $damage = random(20)
+    player.hp -= $damage;
+    $playerLife.style.width = player.hp + '%';
+
+
+    if (player1.hp <= 0) {
+        player1.hp = 0;
+        $arenas.appendChild(playerWins(player2.name));
+        $playerLife.style.width=0 + "%";
+    }
+
+    if (player2.hp <= 0) {
+        player2.hp = 0;
+        $arenas.appendChild(playerWins(player1.name));
+        $playerLife.style.width=0 + "%";
+ 
+    }
+
+}
+
+
+function playerWins(name){
+    const $winTitle = createElement('div', 'loseTitle');
+    $winTitle.innerText = name + ' WINS';
+    $randomButton.disabled = true
+
+    return $winTitle;
+}
+
+$randomButton.addEventListener('click', function(){
+    console.log('####: click Random Button');
+    changeHP(player1);
+    changeHP(player2);
+
+})
+
 
 createPlayer('player1', player1);
 createPlayer('player2', player2);
